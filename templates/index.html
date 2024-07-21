@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tailwind CSS Call to Action</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+  </head>
+  <body
+    class="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white font-sans p-8"
+  >
+    <div
+      class="container mx-auto flex justify-center items-center flex-col text-center"
+    >
+      <h1 class="text-3xl font-semibold mb-4">Lista de filmes</h1>
+
+      <div class="flex items-center gap-12">
+        <div
+          class="flex justify-start items-start flex-col gap-3 min-w-[330px]"
+        >
+          <h2 class="text-xl font-semibold">Adicionar filme</h2>
+          <form
+            class="flex flex-col gap-4 w-full"
+            hx-post="/add-film/"
+            hx-target="#film-list"
+            hx-swap="beforeend"
+            hx-indicator="#spinner"
+            id="film-form"
+          >
+            <div class="flex flex-col items-start">
+              <label
+                for="film"
+                class="text-sm text-navy-700 dark:text-white font-bold"
+                >Filme</label
+              >
+              <input
+                type="text"
+                class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200"
+                name="film"
+                id="film"
+                required
+                minlength="4"
+              />
+            </div>
+            <div class="flex flex-col items-start">
+              <label
+                for="director"
+                class="text-sm text-navy-700 dark:text-white font-bold"
+                >Diretor</label
+              >
+              <input
+                type="text"
+                class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200"
+                name="director"
+                id="director"
+                required
+                minlength="4"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="btn overflow-hidden relative bg-purple-600 text-white py-3 px-4 rounded-xl font-bold uppercase -- before:block before:absolute before:h-full before:w-full before:bg-pink-300 before:left-0 before:top-0 before:-translate-y-full hover:before:translate-y-0 before:transition-transform w-full flex items-center justify-center gap-2"
+            >
+              <div
+                class="animate-spin inline-block w-4 h-4 -ml-4 border-[3px] border-current border-t-transparent text-yellow-1000 rounded-full htmx-indicator"
+                role="status"
+                id="spinner"
+                aria-label="loading"
+              >
+                <span class="sr-only">Loading...</span>
+              </div>
+              <span class="relative"> Adicionar </span>
+            </button>
+          </form>
+        </div>
+
+        <ul
+          class="flex flex-col justify-center items-center gap-3"
+          id="film-list"
+        >
+          {{ range .Films }} {{ block "film-list-element" .}}
+          <li class="w-full bg-white/10 rounded-lg p-4">
+            {{ .Title }} - {{ .Director }}
+          </li>
+          {{ end }} {{ end }}
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      document.body.addEventListener("htmx:afterRequest", function (evt) {
+        if (evt.detail.target.id === "film-list") {
+          document.getElementById("film-form").reset();
+        }
+      });
+    </script>
+  </body>
+</html>
